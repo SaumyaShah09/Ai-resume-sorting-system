@@ -1,0 +1,9 @@
+{
+  "Data Scientist": ["machine learning", "data analysis", "python", "pandas", "numpy", "scikit-learn", "regression", "clustering"],
+  "Web Developer": ["html", "css", "javascript", "react", "bootstrap", "frontend", "backend", "django", "flask"],
+  "DevOps Engineer": ["ci/cd", "jenkins", "docker", "kubernetes", "aws", "azure", "infrastructure", "deployment"],
+  "ETL Developer": ["etl", "data pipeline", "informatica", "talend", "sql", "data warehouse", "extraction", "transformation"],
+  "Data Analyst": ["data visualization", "power bi", "tableau", "excel", "sql", "reporting", "dashboard", "analysis"],
+  "Java Developer": ["java", "spring", "hibernate", "oop", "junit", "maven", "servlets", "rest api"],
+  "Python Developer": ["python", "flask", "django", "numpy", "pandas", "automation", "api development"]
+}

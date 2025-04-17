@@ -1,0 +1,3 @@
+Jane Smith
+Experienced Data Analyst with strong skills in Python, SQL, Power BI, and Excel.
+Worked on data visualization, business reporting, and ETL pipelines.

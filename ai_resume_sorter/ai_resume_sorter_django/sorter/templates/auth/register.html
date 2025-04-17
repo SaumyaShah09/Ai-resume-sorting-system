@@ -1,0 +1,52 @@
+{% extends "auth/base.html" %}
+
+{% block title %}Register | Smart Resume Sorter{% endblock %}
+
+{% block header %}Create an Account{% endblock %}
+
+{% block content %}
+    <div class="bg-white p-6 rounded-lg shadow-lg">
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+
+            <div>
+                <label for="username" class="block text-lg font-medium">Username</label>
+                <input type="text" id="username" name="username" required
+                    class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+
+            <div>
+                <label for="email" class="block text-lg font-medium">Email</label>
+                <input type="email" id="email" name="email" required
+                    class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+
+            <div>
+                <label for="password" class="block text-lg font-medium">Password</label>
+                <input type="password" id="password" name="password" required
+                    class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+
+            <div>
+                <label for="password_confirm" class="block text-lg font-medium">Confirm Password</label>
+                <input type="password" id="confirm_password" name="confirm_password"
+ required
+                    class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+
+            <div class="text-center">
+                <button type="submit" class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-full">
+                    Register
+                </button>
+            </div>
+        </form>
+
+        {% if error %}
+            <div class="text-red-600 mt-4 text-center">{{ error }}</div>
+        {% endif %}
+    </div>
+
+    <p class="mt-4 text-center">
+        Already have an account? <a href="{% url 'login' %}" class="text-indigo-600 hover:text-indigo-700">Login here</a>
+    </p>
+{% endblock %}

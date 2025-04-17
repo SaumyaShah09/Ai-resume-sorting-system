@@ -1,0 +1,17 @@
+Mark Wilson
+Email: markwilson@example.com
+
+Objective:
+Passionate about transforming data into actionable insights as a Data Analyst.
+
+Skills:
+- Excel, Power BI, Tableau
+- SQL, Python
+- Data Cleaning, ETL
+- Business Intelligence
+- Dashboard Reporting
+
+Experience:
+Data Analyst, Insight Corp (2022 - Present)
+- Developed sales performance dashboards.
+- Automated weekly reports using Python scripts.

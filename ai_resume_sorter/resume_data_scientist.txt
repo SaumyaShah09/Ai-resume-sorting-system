@@ -1,0 +1,17 @@
+John Doe
+Email: johndoe@example.com
+
+Objective:
+Seeking a challenging role as a Data Scientist to apply my skills in Python, Machine Learning, and Data Analytics.
+
+Skills:
+- Python, R, SQL
+- Scikit-learn, TensorFlow, Keras
+- Pandas, NumPy, Matplotlib
+- Data visualization and storytelling
+- Strong statistical background
+
+Experience:
+Data Scientist, XYZ Corp (2021 - Present)
+- Built machine learning models to predict user churn.
+- Conducted A/B testing and customer segmentation.

@@ -1,0 +1,61 @@
+from django.shortcuts import redirect
+
+def upload_resume(request):
+    results = []
+    error_message = ""
+    job_role = ""
+
+    if request.method == 'POST':
+        resumes = request.FILES.getlist('resumes')
+        job_role = request.POST.get('job_role', '')
+
+        shortlisted_dir = os.path.join(settings.MEDIA_ROOT, 'shortlisted')
+        if not os.path.exists(shortlisted_dir):
+            os.makedirs(shortlisted_dir)
+
+        for resume_file in resumes:
+            file_name = resume_file.name
+            file_path = os.path.join(settings.MEDIA_ROOT, file_name)
+
+            with open(file_path, 'wb+') as destination:
+                for chunk in resume_file.chunks():
+                    destination.write(chunk)
+
+            try:
+                extracted_text = extract_text(file_path)
+                score = calculate_relevance_score(job_role, extracted_text)
+                results.append({
+                    'file_name': file_name,
+                    'score': round(score * 100, 2),
+                    'text': extracted_text,
+                    'path': file_path
+                })
+
+                if score >= 0.5:
+                    shortlisted_path = os.path.join(shortlisted_dir, file_name)
+                    with open(shortlisted_path, 'wb') as out_file:
+                        with open(file_path, 'rb') as in_file:
+                            out_file.write(in_file.read())
+
+            except Exception as e:
+                error_message = f"Failed to extract one or more resumes: {str(e)}"
+
+        results.sort(key=lambda x: x['score'], reverse=True)
+
+        # ✅ Send to results.html
+        file_names = [res['file_name'] for res in results]
+        scores = [res['score'] for res in results]
+
+        return render(request, 'sorter/results.html', {
+            'results': results,
+            'job_role': job_role,
+            'file_names': file_names,
+            'scores': scores
+        })
+
+    # Initial GET request – show upload form
+    return render(request, 'sorter/upload.html', {
+        'results': [],
+        'job_role': '',
+        'error': ''
+    })

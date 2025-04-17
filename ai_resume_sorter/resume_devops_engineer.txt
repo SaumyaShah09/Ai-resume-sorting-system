@@ -1,0 +1,17 @@
+Jane Smith
+Email: janesmith@example.com
+
+Objective:
+Looking for a DevOps Engineer position to leverage my experience with cloud services and CI/CD pipelines.
+
+Skills:
+- AWS, Azure, GCP
+- Docker, Kubernetes, Jenkins
+- Terraform, Ansible
+- Linux Administration
+- CI/CD, GitOps
+
+Experience:
+DevOps Engineer, CloudNet Inc. (2020 - Present)
+- Managed Kubernetes clusters for high-availability systems.
+- Automated infrastructure using Terraform.

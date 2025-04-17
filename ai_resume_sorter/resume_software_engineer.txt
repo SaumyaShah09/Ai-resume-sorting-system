@@ -1,0 +1,16 @@
+Emily Davis
+Email: emilyd@example.com
+
+Objective:
+A Software Engineer with 3+ years of experience in building full-stack web applications.
+
+Skills:
+- JavaScript, React, Node.js
+- Python, Django
+- HTML, CSS, Bootstrap
+- MySQL, MongoDB
+
+Experience:
+Software Engineer, CodeBase Ltd. (2021 - Present)
+- Built e-commerce features using React and Django.
+- Optimized backend APIs, reducing latency by 40%.
