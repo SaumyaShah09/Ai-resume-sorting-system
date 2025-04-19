@@ -1,6 +1,9 @@
 import os
 import zipfile
 import re
+import spacy
+nlp = spacy.load("en_core_web_sm")
+
 from django.shortcuts import render, redirect
 from django.conf import settings
 from django.http import HttpResponse
@@ -8,6 +11,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from .utils.job_titles import job_titles  # Import job titles dictionary
+from .utils.skills_helper import extract_skills_from_text, compare_skills
 
 from .resume_parser import extract_text
 from .utils.job_titles import job_titles
@@ -201,45 +206,25 @@ def logout_view(request):
     return redirect('login')
 
 
-# -----------------------------------------------
-# 🧠 Job Title Suggestion Upload Page
-# -----------------------------------------------
-@login_required
+
+from django.shortcuts import render, redirect
+import os
+
 def suggest_title(request):
-    return render(request, 'sorter/suggest_title.html')
-
-
-# -----------------------------------------------
-# 📄 Upload Resume for Job Title Suggestion
-# -----------------------------------------------
-@login_required
-def suggest_roles_from_resume(request):
     if request.method == 'POST' and request.FILES.get('resume'):
-        uploaded_file = request.FILES['resume']
-        file_path = os.path.join(settings.MEDIA_ROOT, 'uploaded_resume.pdf')
+        resume_file = request.FILES['resume']
 
-        # Save uploaded resume to server
+        # Save resume temporarily
+        file_path = os.path.join('media', 'uploaded_resume.pdf')
         with open(file_path, 'wb+') as destination:
-            for chunk in uploaded_file.chunks():
+            for chunk in resume_file.chunks():
                 destination.write(chunk)
 
-        try:
-            # Extract text from resume
-            extracted_text = extract_text(file_path).lower()
-
-            # Extract skills
-            extracted_skills = extract_skills_from_text(extracted_text)
-
-            # Suggest job titles
-            suggestions = suggest_job_titles(extracted_skills, job_titles)
-
-            return render(request, 'sorter/suggested_titles.html', {
-                'extracted_skills': extracted_skills,
-                'suggestions': suggestions
-            })
-
-        except Exception as e:
-            messages.error(request, f"Error extracting resume: {str(e)}")
-            return redirect('suggest_title')
+        return redirect('suggested_titles')
 
     return render(request, 'sorter/suggest_title.html')
+
+
+def suggested_titles(request):
+    titles = ['Software Developer 👨‍💻', 'Data Analyst 📊', 'AI Engineer 🤖']
+    return render(request, 'sorter/suggested_titles.html', {'titles': titles})

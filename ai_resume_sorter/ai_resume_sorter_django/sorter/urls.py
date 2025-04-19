@@ -10,6 +10,6 @@ urlpatterns = [
 
     # 👉 Module 2 paths
     path('suggest-title/', views.suggest_title, name='suggest_title'),
-    path('suggested-titles/', views.suggest_title, name='suggested_titles'),
+    path('suggested-titles/', views.suggested_titles, name='suggested_titles'),
 
 ]
