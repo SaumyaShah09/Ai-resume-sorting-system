@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h2>Suggested Job Titles</h2>
+
+{% if titles_with_skills %}
+<ul>
+    {% for title in titles_with_skills %}
+        <li>{{ title }}</li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>⚠️ No suggestions available. Please try uploading a different resume.</p>
+{% endif %}
+
+</body>
+</html>
