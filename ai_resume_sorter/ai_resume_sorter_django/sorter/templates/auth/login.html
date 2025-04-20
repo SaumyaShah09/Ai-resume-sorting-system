@@ -6,6 +6,23 @@
 
 {% block content %}
     <div class="bg-white p-6 rounded-lg shadow-lg">
+        {# Display Django messages framework messages if any (e.g., from redirects) #}
+        {% if messages %}
+            <div class="mb-4">
+                {% for message in messages %}
+                    {# Style based on message tags (e.g., error, success, info) #}
+                    <div class="p-3 rounded text-sm font-medium text-center
+                        {% if message.tags == 'error' %} bg-red-100 text-red-700
+                        {% elif message.tags == 'success' %} bg-green-100 text-green-700
+                        {% elif message.tags == 'info' %} bg-blue-100 text-blue-700
+                        {% elif message.tags == 'warning' %} bg-yellow-100 text-yellow-700
+                        {% else %} bg-gray-100 text-gray-700 {% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
         <form method="post" class="space-y-6">
             {% csrf_token %}
 
@@ -22,18 +39,20 @@
             </div>
 
             <div class="text-center">
-                <button type="submit" class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-full">
+                <button type="submit" class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-full transition duration-150">
                     Login
                 </button>
             </div>
         </form>
 
-        {% if error %}
+        {# Remove specific error variable display if using Django messages framework #}
+        {# {% if error %}
             <div class="text-red-600 mt-4 text-center">{{ error }}</div>
-        {% endif %}
+        {% endif %} #}
     </div>
 
-    <p class="mt-4 text-center">
-        Don't have an account? <a href="{% url 'register' %}" class="text-indigo-600 hover:text-indigo-700">Register here</a>
+    <p class="mt-4 text-center text-sm text-gray-600">
+        {## --- ADD NAMESPACE 'sorter:' to the url tag below --- ##}
+        Don't have an account? <a href="{% url 'sorter:register' %}" class="font-medium text-indigo-600 hover:text-indigo-500">Register here</a>
     </p>
 {% endblock %}

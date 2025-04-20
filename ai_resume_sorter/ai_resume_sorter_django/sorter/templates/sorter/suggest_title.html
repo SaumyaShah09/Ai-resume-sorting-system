@@ -1,52 +1,127 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Smart Resume Sorter - Suggest Job Titles</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% extends "sorter/base.html" %}
 
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100 text-gray-800 font-sans">
-    <div class="max-w-6xl mx-auto px-4 py-8">
-        <h1 class="text-4xl font-bold text-center text-indigo-600 mb-8">🧠 AI Job Title Suggester</h1>
+{% block title %}Suggest Job Titles | Smart Resume Sorter{% endblock title %}
 
-        <!-- Upload Form -->
-        <div class="bg-white shadow-xl rounded-lg p-6 mb-10">
-            <form method="POST" enctype="multipart/form-data" class="space-y-6">
-                {% csrf_token %}
-                <div>
-                    <label for="resume" class="block text-lg font-medium">📎 Upload Resume</label>
-                    <input type="file" id="resume" name="resume" accept=".pdf,.docx" required
-                        class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
-                </div>
+{% block content %}
+    {# Use a consistent H1 style within the content block #}
+    <h1 class="text-3xl font-semibold text-center text-gray-700 mb-8 flex items-center justify-center">
+        <i class="fas fa-tags text-purple-500 mr-3 text-xl"></i> {# Changed icon #}
+        <span>AI Job Title Suggester</span>
+    </h1>
 
-                <div class="text-center">
-                    <button type="submit"
-                        class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-full transition">
-                        💡 Get Job Title Suggestions
-                    </button>
-                </div>
-            </form>
-        </div>
+    <!-- Upload Form -->
+    {# Style consistent with home.html feature card #}
+    <div class="bg-white shadow-lg rounded-lg p-6 mb-10">
+        <form method="POST" enctype="multipart/form-data" class="space-y-6">
+            {% csrf_token %}
+            <div>
+                <label for="resume" class="block text-lg font-medium">📎 Upload Single Resume</label>
+                 <input type="file" id="resume" name="resume" accept=".pdf,.docx" required
+                    class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 border border-gray-200 hover:border-gray-300"> {# Added border #}
+                <p class="mt-1 text-xs text-gray-500">Supports PDF and DOCX formats.</p>
+            </div>
 
-        {% if error %}
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
-            {{ error }}
-        </div>
-        {% endif %}
-
-        {% if titles %}
-        <div class="bg-white shadow-lg rounded-lg p-6 space-y-6">
-            <h2 class="text-2xl font-semibold text-gray-700 mb-4">🔍 Suggested Job Titles</h2>
-            <ul class="list-disc list-inside text-lg text-gray-800 space-y-2">
-                {% for title in titles %}
-                    <li class="py-2 px-4 rounded-md bg-indigo-50 text-indigo-700">{{ title }}</li>
-                {% endfor %}
-            </ul>
-        </div>
-        {% endif %}
+            <div class="text-center pt-2"> {# Added padding #}
+                {# Style consistent with home.html feature card button #}
+                <button type="submit"
+                    class="inline-block bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-6 rounded-full transition duration-300">
+                    <i class="fas fa-lightbulb mr-2"></i> Get Suggestions
+                </button>
+            </div>
+        </form>
     </div>
-</body>
-</html>
+
+    {# Display Django messages first #}
+     {% if messages %}
+        <div class="mb-6 space-y-2">
+            {% for message in messages %}
+                <div class="p-3 rounded text-sm font-medium text-center
+                    {% if message.tags == 'error' %} bg-red-100 border border-red-400 text-red-700
+                    {% elif message.tags == 'success' %} bg-green-100 border border-green-400 text-green-700
+                    {% elif message.tags == 'info' %} bg-blue-100 border border-blue-400 text-blue-700
+                    {% elif message.tags == 'warning' %} bg-yellow-100 border border-yellow-400 text-yellow-700
+                    {% else %} bg-gray-100 border border-gray-400 text-gray-700 {% endif %}" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Error Display -->
+    {% if error %}
+    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6" role="alert">
+         {{ error }}
+    </div>
+    {% endif %}
+
+    <!-- Info Message Display -->
+    {% if info %}
+    <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded mb-6" role="alert">
+         {{ info }}
+    </div>
+    {% endif %}
+
+
+    <!-- Results Display -->
+    {% if titles is not None or skills is not None %}
+    {# Style consistent with home.html feature card #}
+    <div class="bg-white shadow-lg rounded-lg p-6 space-y-6">
+
+        {# Suggested Titles Section #}
+        {% if titles %}
+            <div>
+                {# Style consistent H2 #}
+                <h2 class="text-2xl font-semibold text-gray-700 mb-4 flex items-center">
+                     <i class="fas fa-check-circle text-green-500 mr-3 text-xl"></i>
+                     <span>Suggested Job Titles</span>
+                </h2>
+                <div class="flex flex-wrap gap-3"> {# Use flex-wrap for better tag layout #}
+                    {% for title in titles %}
+                        {# Consistent tag styling #}
+                        <span class="inline-block bg-indigo-100 text-indigo-800 px-4 py-2 rounded-full text-sm font-medium shadow-sm border border-indigo-200">
+                            {{ title }}
+                        </span>
+                    {% endfor %}
+                </div>
+             </div>
+        {% elif not error and request.method == 'POST' and not info %}
+            {# Display if no titles found after POST, and no other messages #}
+            <div>
+                 <h2 class="text-2xl font-semibold text-gray-700 mb-4 flex items-center">
+                      <i class="fas fa-info-circle text-blue-500 mr-3 text-xl"></i>
+                      <span>Suggested Job Titles</span>
+                 </h2>
+                <p class="text-gray-600">No specific job titles strongly matched based on the extracted skills.</p>
+             </div>
+        {% endif %}
+
+        {# Separator #}
+        {% if titles and skills %}
+            <hr class="my-4 border-gray-200"> {# Adjusted margin #}
+        {% endif %}
+
+        {# Detected Skills Section #}
+        {% if skills %}
+            <div>
+                 {# Style consistent H2 #}
+                 <h2 class="text-2xl font-semibold text-gray-700 mb-4 flex items-center">
+                     <i class="fas fa-cogs text-gray-500 mr-3 text-xl"></i>
+                     <span>Detected Skills</span>
+                 </h2>
+                 <div class="flex flex-wrap gap-2">
+                    {% for skill in skills %}
+                         {# Skill tags consistent with upload.html matched skills #}
+                        <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-semibold shadow-sm">
+                            {{ skill }}
+                        </span>
+                    {% empty %}
+                        <p class="text-sm text-gray-500 italic">No relevant skills were detected.</p>
+                    {% endfor %}
+                 </div>
+            </div>
+        {% endif %}
+
+    </div>
+    {% endif %} {# End results container #}
+
+{% endblock content %}

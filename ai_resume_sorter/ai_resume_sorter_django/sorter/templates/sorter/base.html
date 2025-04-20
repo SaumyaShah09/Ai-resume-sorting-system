@@ -1,20 +1,121 @@
-<!-- templates/base.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}Smart Resume Sorter{% endblock %}</title>
+    {# Use block for page-specific titles #}
+    <title>{% block title %}Smart Resume Sorter{% endblock title %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Chart.js CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" /> <!-- Font Awesome for icons -->
+    {% block extra_head %}{% endblock extra_head %} {# Block for extra head elements like Chart.js script #}
 </head>
-<body class="bg-gray-100 text-gray-800 font-sans">
-    <div class="max-w-6xl mx-auto px-4 py-8">
-        {% block content %}{% endblock %}
-    </div>
+<body class="bg-gray-100 text-gray-800 font-sans flex flex-col min-h-screen"> {# Ensure footer sticks to bottom #}
+
+    <!-- Navigation Bar (Copied from home.html) -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo/Title -->
+                <div class="flex-shrink-0 flex items-center">
+                     <a href="{% url 'sorter:home' %}" class="text-2xl font-bold text-indigo-600 flex items-center">
+                        <i class="fas fa-rocket mr-2 text-xl"></i>
+                        <span>SmartSorter</span>
+                    </a>
+                </div>
+                <!-- Desktop Navigation Links -->
+                <div class="hidden md:flex items-center space-x-1">
+                    {# --- Add active class logic based on request path --- #}
+                    <a href="{% url 'sorter:home' %}" class="px-3 py-2 rounded-md text-sm font-medium {% if request.resolver_match.url_name == 'home' %}text-indigo-600 border-b-2 border-indigo-500{% else %}text-gray-500 hover:text-indigo-600 hover:bg-gray-100{% endif %}" {% if request.resolver_match.url_name == 'home' %}aria-current="page"{% endif %}>Home</a>
+                     <a href="{% url 'sorter:upload_resume' %}" class="px-3 py-2 rounded-md text-sm font-medium {% if request.resolver_match.url_name == 'upload_resume' %}text-indigo-600 border-b-2 border-indigo-500{% else %}text-gray-500 hover:text-indigo-600 hover:bg-gray-100{% endif %}" {% if request.resolver_match.url_name == 'upload_resume' %}aria-current="page"{% endif %}>Sort Resumes</a>
+                     <a href="{% url 'sorter:suggest_title' %}" class="px-3 py-2 rounded-md text-sm font-medium {% if request.resolver_match.url_name == 'suggest_title' %}text-indigo-600 border-b-2 border-indigo-500{% else %}text-gray-500 hover:text-indigo-600 hover:bg-gray-100{% endif %}" {% if request.resolver_match.url_name == 'suggest_title' %}aria-current="page"{% endif %}>Suggest Titles</a>
+
+                    <div class="pl-4 flex items-center space-x-2">
+                        {% if user.is_authenticated %}
+                            <span class="text-gray-600 px-3 py-2 text-sm font-medium hidden lg:inline">Hi, {{ user.username }}!</span>
+                            <form action="{% url 'sorter:logout' %}" method="post" class="inline">
+                                 {% csrf_token %}
+                                <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium transition duration-150">Logout</button>
+                            </form>
+                        {% else %}
+                            <a href="{% url 'sorter:login' %}" class="text-gray-500 hover:text-indigo-600 hover:bg-gray-100 px-4 py-2 rounded-md text-sm font-medium">Login</a>
+                            <a href="{% url 'sorter:register' %}" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 py-2 rounded-full text-sm transition duration-150">Register</a>
+                        {% endif %}
+                    </div>
+                </div>
+                <!-- Mobile Menu Button -->
+                <div class="-mr-2 flex md:hidden">
+                     <button type="button" id="mobile-menu-button" class="bg-white inline-flex items-center justify-center p-2 rounded-md text-gray-500 hover:text-indigo-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500" aria-controls="mobile-menu" aria-expanded="false">
+                        <span class="sr-only">Open main menu</span>
+                        <svg class="block h-6 w-6" id="icon-menu-closed" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                        <svg class="hidden h-6 w-6" id="icon-menu-open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile menu -->
+        <div class="md:hidden hidden" id="mobile-menu">
+             <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t border-gray-200">
+                 <a href="{% url 'sorter:home' %}" class="block px-3 py-2 rounded-md text-base font-medium {% if request.resolver_match.url_name == 'home' %}bg-indigo-50 text-indigo-700{% else %}text-gray-600 hover:bg-gray-50 hover:text-indigo-600{% endif %}" {% if request.resolver_match.url_name == 'home' %}aria-current="page"{% endif %}>Home</a>
+                 <a href="{% url 'sorter:upload_resume' %}" class="block px-3 py-2 rounded-md text-base font-medium {% if request.resolver_match.url_name == 'upload_resume' %}bg-indigo-50 text-indigo-700{% else %}text-gray-600 hover:bg-gray-50 hover:text-indigo-600{% endif %}" {% if request.resolver_match.url_name == 'upload_resume' %}aria-current="page"{% endif %}>Sort Resumes</a>
+                 <a href="{% url 'sorter:suggest_title' %}" class="block px-3 py-2 rounded-md text-base font-medium {% if request.resolver_match.url_name == 'suggest_title' %}bg-indigo-50 text-indigo-700{% else %}text-gray-600 hover:bg-gray-50 hover:text-indigo-600{% endif %}" {% if request.resolver_match.url_name == 'suggest_title' %}aria-current="page"{% endif %}>Suggest Titles</a>
+                 <hr class="my-2">
+                 {% if user.is_authenticated %}
+                    <span class="text-gray-500 block px-3 py-2 text-base font-medium">Hi, {{ user.username }}!</span>
+                    <form action="{% url 'sorter:logout' %}" method="post" class="block">
+                        {% csrf_token %}
+                         <button type="submit" class="w-full text-left bg-red-500 hover:bg-red-600 text-white block px-3 py-2 rounded-md text-base font-medium">Logout</button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'sorter:login' %}" class="text-gray-600 hover:bg-gray-50 hover:text-indigo-600 block px-3 py-2 rounded-md text-base font-medium">Login</a>
+                    <a href="{% url 'sorter:register' %}" class="bg-indigo-600 hover:bg-indigo-700 text-white block w-full text-center px-3 py-2 rounded-full text-base font-bold mt-2">Register</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    {# Added flex-grow to push footer down #}
+    <main class="flex-grow py-8">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+             {% block content %}
+             <!-- Page-specific content will be injected here -->
+             {% endblock content %}
+        </div>
+    </main>
+
+    <!-- Footer (Copied from home.html) -->
+    <footer class="bg-gray-800 text-gray-400 mt-auto"> {# Use mt-auto with flex-col on body #}
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-5 text-center text-sm">
+            <p>SmartSorter © {% now "Y" %} | Developed by Saumya Shah</p>
+        </div>
+    </footer>
+
+    {# JS for Mobile Menu Toggle (Copied from home.html) #}
+    <script>
+        const menuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const iconOpen = document.getElementById('icon-menu-open');
+        const iconClosed = document.getElementById('icon-menu-closed');
+
+        // Check if elements exist before adding listener
+        if (menuButton && mobileMenu && iconOpen && iconClosed) {
+            menuButton.addEventListener('click', () => {
+              const expanded = menuButton.getAttribute('aria-expanded') === 'true' || false;
+              menuButton.setAttribute('aria-expanded', !expanded);
+              mobileMenu.classList.toggle('hidden');
+              iconOpen.classList.toggle('hidden');
+              iconClosed.classList.toggle('hidden');
+            });
+        } else {
+            console.warn("Mobile menu elements not found. Menu toggle might not work.");
+        }
+    </script>
+
+    {% block extra_js %}{% endblock extra_js %} {# Block for page-specific JS like Chart.js logic #}
+
 </body>
 </html>

@@ -16,9 +16,28 @@
         <div class="bg-white p-6 rounded shadow-md">
             <h3 class="text-xl font-bold mb-4 text-indigo-600">Top Job Titles for You:</h3>
             <ul class="list-disc list-inside text-gray-800">
-                {% for title in titles %}
-                    <li class="py-2 px-4 rounded-md bg-indigo-50 text-indigo-700">{{ title }}</li>
-                {% endfor %}
+                {% if suggestions %}
+    <h2>Suggested Job Titles:</h2>
+    <ul>
+        {% for suggestion in suggestions %}
+            <li>
+                <strong>{{ suggestion.job_title }}</strong><br>
+                Score: {{ suggestion.score }}<br>
+                Matched Skills:
+                <ul>
+                    {% for skill in suggestion.matched_skills %}
+                        <li>{{ skill }}</li>
+                    {% endfor %}
+                </ul>
+            </li>
+        {% endfor %}
+    </ul>
+{% elif error %}
+    <p class="error">{{ error }}</p>
+{% else %}
+    <p>No suggestions available.</p>
+{% endif %}
+
             </ul>
         </div>
     </div>

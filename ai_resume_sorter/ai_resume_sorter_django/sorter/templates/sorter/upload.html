@@ -1,179 +1,240 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Smart Resume Sorter</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% extends "sorter/base.html" %}
 
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
+{% block title %}Sort Resumes | Smart Resume Sorter{% endblock title %}
 
-    <!-- Chart.js CDN -->
+{% block extra_head %}
+    {# Add Chart.js only for this page #}
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body class="bg-gray-100 text-gray-800 font-sans">
-    <div class="max-w-6xl mx-auto px-4 py-8">
-        <h1 class="text-4xl font-bold text-center text-indigo-600 mb-8">🚀 Smart Resume Sorter</h1>
+{% endblock extra_head %}
 
-        <!-- Upload Form -->
-        <div class="bg-white shadow-xl rounded-lg p-6 mb-10">
-            <form method="post" enctype="multipart/form-data" class="space-y-6">
-                {% csrf_token %}
-                <div>
-                    <label for="job_role" class="block text-lg font-medium">🎯 Target Job Role</label>
-                    <input type="text" id="job_role" name="job_role" placeholder="e.g., Data Analyst"
-                        class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
-                </div>
 
-                <div>
-                    <label for="resumes" class="block text-lg font-medium">📎 Upload Resumes</label>
-                    <input type="file" id="resumes" name="resumes" accept=".pdf,.docx" multiple required
-                        class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
-                </div>
+{% block content %}
+    {# Use a consistent H1 style within the content block #}
+    <h1 class="text-3xl font-semibold text-center text-gray-700 mb-8 flex items-center justify-center">
+        <i class="fas fa-file-alt text-indigo-500 mr-3 text-xl"></i>
+        <span>Smart Resume Sorter</span>
+    </h1>
 
-                <div class="text-center">
-                    <button type="submit"
-                        class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-full transition">
-                        ⬆️ Upload & Analyze
-                    </button>
-                </div>
-            </form>
-        </div>
-
-        {% if error %}
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
-            {{ error }}
-        </div>
-        {% endif %}
-
-        {% if results %}
-        <div class="bg-white shadow-lg rounded-lg p-6 space-y-6">
-            <h2 class="text-2xl font-semibold text-gray-700 mb-4">🔍 Results for: <span class="text-indigo-600">"{{ job_role }}"</span></h2>
-
-            <!-- Table -->
-            <div class="overflow-x-auto">
-                <table class="min-w-full text-sm text-left border rounded-lg">
-                    <thead class="bg-indigo-100 text-indigo-700">
-                        <tr>
-                            <th class="py-3 px-4">📄 File Name</th>
-                            <th class="py-3 px-4">✅ Score (%)</th>
-                            <th class="py-3 px-4">📖 Extracted Text</th>
-                            <th class="py-3 px-4">🛠️ Matched Skills</th>
-                            <th class="py-3 px-4">❌ Missing Skills</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-200">
-                        {% for r in results %}
-                        <tr class="hover:bg-gray-50">
-                            <td class="py-3 px-4 font-medium">{{ r.file_name }}</td>
-                            <td class="py-3 px-4 text-green-600 font-semibold">{{ r.score }}</td>
-                            <td class="py-3 px-4">
-                                <details class="cursor-pointer">
-                                    <summary class="text-indigo-500 underline">View</summary>
-                                    <pre class="mt-2 text-xs bg-gray-50 p-2 rounded max-h-40 overflow-y-auto">{{ r.text }}</pre>
-                                </details>
-                            </td>
-                            <td class="py-3 px-4">
-                                {% if r.matched_skills %}
-                                    <div class="flex flex-wrap gap-2">
-                                        {% for skill in r.matched_skills %}
-                                            <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold shadow-sm">
-                                                {% if skill == 'Python' %}
-                                                    🐍 Python
-                                                {% elif skill == 'Excel' %}
-                                                    📊 Excel
-                                                {% elif skill == 'Django' %}
-                                                    🕸️ Django
-                                                {% elif skill == 'JavaScript' %}
-                                                    🌐 JavaScript
-                                                {% elif skill == 'Power BI' %}
-                                                    📈 Power BI
-                                                {% else %}
-                                                    {{ skill }}
-                                                {% endif %}
-                                            </span>
-                                        {% endfor %}
-                                    </div>
-                                {% else %}
-                                    <span class="text-red-600">No Matched Skills</span>
-                                {% endif %}
-                            </td>
-                            <td class="py-3 px-4">
-                                {% if r.missing_skills %}
-                                    <div class="flex flex-wrap gap-2">
-                                        {% for skill in r.missing_skills %}
-                                            <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-semibold shadow-sm">{{ skill }}</span>
-                                        {% endfor %}
-                                    </div>
-                                {% else %}
-                                    <span class="text-green-600">No Missing Skills</span>
-                                {% endif %}
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+    <!-- Upload Form -->
+    {# Style consistent with home.html feature card #}
+    <div class="bg-white shadow-lg rounded-lg p-6 mb-10">
+        <form method="post" enctype="multipart/form-data" class="space-y-6">
+            {% csrf_token %}
+            <div>
+                <label for="job_role" class="block text-lg font-medium">🎯 Target Job Role</label>
+                <input type="text" id="job_role" name="job_role" value="{{ job_role|default:'' }}" placeholder="e.g., Data Analyst" {# Keep value on reload #}
+                    class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
             </div>
 
-            <!-- Download Button -->
-            <div class="text-right">
-                <a href="{% url 'download_shortlisted' %}"
-                   class="inline-block bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-full font-semibold transition duration-150">
-                    📥 Download Shortlisted Resumes (Score ≥ 50%)
-                </a>
+            <div>
+                <label for="resumes" class="block text-lg font-medium">📎 Upload Resumes (Multiple Allowed)</label>
+                <input type="file" id="resumes" name="resumes" accept=".pdf,.docx" multiple required
+                    class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 border border-gray-200 hover:border-gray-300"> {# Added border for visibility #}
+                <p class="mt-1 text-xs text-gray-500">Supports PDF and DOCX formats.</p>
             </div>
+
+            <div class="text-center pt-2"> {# Added padding #}
+                 {# Style consistent with home.html feature card button #}
+                <button type="submit"
+                    class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-full transition duration-300">
+                    <i class="fas fa-upload mr-2"></i> Upload & Analyze {# Changed Icon #}
+                </button>
+            </div>
+        </form>
+    </div>
+
+    {# Display Django messages first #}
+     {% if messages %}
+        <div class="mb-6 space-y-2">
+            {% for message in messages %}
+                <div class="p-3 rounded text-sm font-medium text-center
+                    {% if message.tags == 'error' %} bg-red-100 border border-red-400 text-red-700
+                    {% elif message.tags == 'success' %} bg-green-100 border border-green-400 text-green-700
+                    {% elif message.tags == 'info' %} bg-blue-100 border border-blue-400 text-blue-700
+                    {% elif message.tags == 'warning' %} bg-yellow-100 border border-yellow-400 text-yellow-700
+                    {% else %} bg-gray-100 border border-gray-400 text-gray-700 {% endif %}" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {# Display specific error variable if needed (can often be replaced by messages) #}
+    {% if error %}
+    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6" role="alert">
+        {{ error|linebreaksbr }} {# Use linebreaksbr for multi-line errors #}
+    </div>
+    {% endif %}
+
+    {# Results Section #}
+    {% if results %}
+    {# Style consistent with home.html feature card #}
+    <div class="bg-white shadow-lg rounded-lg p-6 space-y-6">
+        {# Style consistent H2 #}
+        <h2 class="text-2xl font-semibold text-gray-700 mb-4">
+            🔍 Results for: <span class="text-indigo-600 font-bold">"{{ job_role }}"</span>
+        </h2>
+
+        <!-- Table -->
+        <div class="overflow-x-auto border border-gray-200 rounded-lg">
+            <table class="min-w-full text-sm text-left">
+                <thead class="bg-gray-100 text-gray-600 uppercase tracking-wider">
+                    <tr>
+                        <th class="py-3 px-4 font-semibold">📄 File Name</th>
+                        <th class="py-3 px-4 font-semibold text-center">✅ Score (%)</th>
+                        <th class="py-3 px-4 font-semibold text-center">📖 Text</th>
+                        <th class="py-3 px-4 font-semibold">🛠️ Matched Skills</th>
+                        <th class="py-3 px-4 font-semibold">❌ Missing Skills</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200 bg-white">
+                    {% for r in results %}
+                    <tr class="hover:bg-gray-50 transition duration-150">
+                        <td class="py-3 px-4 font-medium text-gray-800 whitespace-nowrap">{{ r.file_name }}</td>
+                        <td class="py-3 px-4 text-center {% if r.score >= 50 %}text-green-600{% else %}text-orange-600{% endif %} font-semibold">{{ r.score }}</td>
+                        <td class="py-3 px-4 text-center">
+                            {# Improved details/summary styling #}
+                            <details class="group">
+                                <summary class="text-indigo-600 hover:text-indigo-800 font-medium cursor-pointer list-none flex items-center justify-center">
+                                    <span>View</span>
+                                    <svg class="w-4 h-4 ml-1 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                </summary>
+                                <pre class="mt-2 text-xs bg-gray-50 p-3 rounded border border-gray-200 max-h-48 overflow-y-auto text-left whitespace-pre-wrap break-words">{{ r.text }}</pre>
+                            </details>
+                        </td>
+                        <td class="py-3 px-4">
+                            {% if r.matched_skills %}
+                                <div class="flex flex-wrap gap-1"> {# Reduced gap slightly #}
+                                    {% for skill in r.matched_skills %}
+                                        {# Skill tags consistent with home.html #}
+                                        <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-semibold shadow-sm">
+                                            {{ skill }}
+                                        </span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <span class="text-gray-500 text-xs italic">None</span>
+                            {% endif %}
+                        </td>
+                        <td class="py-3 px-4">
+                            {% if r.missing_skills %}
+                                <div class="flex flex-wrap gap-1"> {# Reduced gap slightly #}
+                                    {% for skill in r.missing_skills %}
+                                        <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-xs font-semibold shadow-sm">{{ skill }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <span class="text-green-600 text-xs italic">All matched!</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
 
-        <!-- Bar Chart -->
-        <div class="mt-12 bg-white shadow-lg rounded-lg p-6">
-            <h2 class="text-2xl font-semibold text-gray-700 mb-4">📊 Resume Match Score Chart</h2>
-            <canvas id="scoreChart" class="w-full h-96"></canvas>
+        <!-- Download Button -->
+        <div class="text-right pt-4">
+            {# Ensure URL tag uses namespace #}
+            <a href="{% url 'sorter:download_shortlisted' %}"
+               class="inline-block bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-full font-semibold transition duration-150 text-sm shadow hover:shadow-md">
+                <i class="fas fa-download mr-2"></i> Download Shortlisted (Score ≥ 50%)
+            </a>
         </div>
+    </div>
 
-        <!-- Data for JS -->
-        {{ file_names|json_script:"file-names-data" }}
-        {{ scores|json_script:"scores-data" }}
+    <!-- Bar Chart -->
+    {# Style consistent with home.html feature card #}
+    <div class="mt-12 bg-white shadow-lg rounded-lg p-6">
+        {# Style consistent H2 #}
+        <h2 class="text-2xl font-semibold text-gray-700 mb-4 flex items-center justify-center">
+             <i class="fas fa-chart-bar mr-3 text-xl text-indigo-500"></i>
+             <span>Resume Match Score Chart</span>
+        </h2>
+        <div class="relative h-96"> {# Added relative positioning for responsiveness #}
+            <canvas id="scoreChart"></canvas>
+        </div>
+    </div>
 
-        <!-- JavaScript Chart Logic -->
-        <script>
+    <!-- Data for JS -->
+    {{ file_names|json_script:"file-names-data" }}
+    {{ scores|json_script:"scores-data" }}
+    {% endif %}{# End results check #}
+
+{% endblock content %}
+
+
+{% block extra_js %}
+    {# Chart.js Logic (only if results exist) #}
+    {% if results %}
+    <script>
+        // Wrap in try-catch for safety
+        try {
             const labels = JSON.parse(document.getElementById('file-names-data').textContent);
             const data = JSON.parse(document.getElementById('scores-data').textContent);
+            const ctxBar = document.getElementById('scoreChart')?.getContext('2d'); // Add optional chaining
 
-            // Bar Chart
-            const ctxBar = document.getElementById('scoreChart').getContext('2d');
-            new Chart(ctxBar, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Resume Match Score (%)',
-                        data: data,
-                        backgroundColor: 'rgba(99, 102, 241, 0.6)',
-                        borderColor: 'rgba(99, 102, 241, 1)',
-                        borderWidth: 1,
-                        borderRadius: 6
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: { display: false }
+            if (ctxBar && labels && data) {
+                new Chart(ctxBar, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Resume Match Score (%)',
+                            data: data,
+                            backgroundColor: data.map(score => score >= 50 ? 'rgba(22, 163, 74, 0.6)' : 'rgba(234, 88, 12, 0.6)'), // Green >= 50, Orange < 50
+                            borderColor: data.map(score => score >= 50 ? 'rgba(22, 163, 74, 1)' : 'rgba(234, 88, 12, 1)'),
+                            borderWidth: 1,
+                            borderRadius: 4, // Slightly less rounded
+                            borderSkipped: false,
+                        }]
                     },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            max: 100,
-                            title: {
-                                display: true,
-                                text: 'Score (%)',
-                                font: { size: 14 }
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false, // Allow chart to resize height
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed.y !== null) {
+                                            label += context.parsed.y + '%';
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100,
+                                title: {
+                                    display: true,
+                                    text: 'Score (%)',
+                                    font: { size: 14 }
+                                }
+                            },
+                            x: {
+                                title: {
+                                     display: true,
+                                     text: 'Resume File',
+                                     font: { size: 14 }
+                                }
                             }
                         }
                     }
-                }
-            });
-        </script>
-        {% endif %}
-    </div>
-</body>
-</html>
+                });
+            } else {
+                 console.error("Chart elements or data not found.");
+            }
+        } catch (e) {
+            console.error("Error initializing chart:", e);
+        }
+    </script>
+    {% endif %}
+{% endblock extra_js %}

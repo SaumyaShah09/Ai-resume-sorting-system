@@ -6,18 +6,32 @@
 
 {% block content %}
     <div class="bg-white p-6 rounded-lg shadow-lg">
+         {# Display Django messages framework messages if any (e.g., from validation errors in view) #}
+         {% if messages %}
+            <div class="mb-4 space-y-2">
+                {% for message in messages %}
+                    <div class="p-3 rounded text-sm font-medium text-center
+                        {% if message.tags == 'error' %} bg-red-100 text-red-700
+                        {% elif message.tags == 'success' %} bg-green-100 text-green-700
+                        {% else %} bg-gray-100 text-gray-700 {% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
         <form method="post" class="space-y-6">
             {% csrf_token %}
 
             <div>
                 <label for="username" class="block text-lg font-medium">Username</label>
-                <input type="text" id="username" name="username" required
+                <input type="text" id="username" name="username" required value="{{ request.POST.username|default:'' }}" {# Keep value on error #}
                     class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
             </div>
 
             <div>
                 <label for="email" class="block text-lg font-medium">Email</label>
-                <input type="email" id="email" name="email" required
+                <input type="email" id="email" name="email" required value="{{ request.POST.email|default:'' }}" {# Keep value on error #}
                     class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
             </div>
 
@@ -28,25 +42,27 @@
             </div>
 
             <div>
-                <label for="password_confirm" class="block text-lg font-medium">Confirm Password</label>
-                <input type="password" id="confirm_password" name="confirm_password"
- required
+                 {# Corrected label 'for' attribute and input id/name #}
+                <label for="confirm_password" class="block text-lg font-medium">Confirm Password</label>
+                <input type="password" id="confirm_password" name="confirm_password" required
                     class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
             </div>
 
             <div class="text-center">
-                <button type="submit" class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-full">
+                <button type="submit" class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-full transition duration-150">
                     Register
                 </button>
             </div>
         </form>
 
-        {% if error %}
+        {# Remove specific error variable display if using Django messages framework #}
+        {# {% if error %}
             <div class="text-red-600 mt-4 text-center">{{ error }}</div>
-        {% endif %}
+        {% endif %} #}
     </div>
 
-    <p class="mt-4 text-center">
-        Already have an account? <a href="{% url 'login' %}" class="text-indigo-600 hover:text-indigo-700">Login here</a>
+    <p class="mt-4 text-center text-sm text-gray-600">
+        {## --- ADD NAMESPACE 'sorter:' to the url tag below --- ##}
+        Already have an account? <a href="{% url 'sorter:login' %}" class="font-medium text-indigo-600 hover:text-indigo-500">Login here</a>
     </p>
 {% endblock %}
